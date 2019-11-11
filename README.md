@@ -8,6 +8,9 @@ Currently supported:
  * google cloud storage
  
  
+## Installaton
+`pip install dumpster`
+ 
  ## Usage
  ```python
 from dumpster.registries.file import ModelRegistry

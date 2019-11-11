@@ -1,7 +1,7 @@
-# Simple model-registry
+# Dumpster
 
-Utility extension that uses dumps your model state, the source code and the global imports. This ensures that dumped
-models can be loaded even when the class definition in your project has changed or ceased to exist.
+Utility that dumps your **model state**, the **source code** and the **global imports**. This ensures that dumped
+models can be loaded even when the class definition in your project has changed or has ceased to exist.
 
 Currently supported:
  * file storage
@@ -10,7 +10,7 @@ Currently supported:
  
  ## Usage
  ```python
-from model_registry.registries.file import ModelRegistry
+from dumpster.registries.file import ModelRegistry
 import torch
 from torch import nn
 

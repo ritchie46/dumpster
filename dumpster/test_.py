@@ -1,6 +1,6 @@
-from model_registry.registries import base
-from model_registry import file
-from model_registry.model import ExampleModel
+from dumpster.registries import base
+from dumpster import file
+from dumpster.model import ExampleModel
 
 
 def test_init():

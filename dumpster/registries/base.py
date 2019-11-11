@@ -2,7 +2,7 @@ import inspect
 from types import ModuleType
 import io
 import pickle
-from model_registry.utils import clean_source, get_class_name
+from dumpster.utils import clean_source, get_class_name
 
 
 class ModelRegistryBase:

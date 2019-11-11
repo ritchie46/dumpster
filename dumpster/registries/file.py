@@ -1,5 +1,5 @@
 import os
-from model_registry.registries.base import ModelRegistryBase
+from dumpster.registries.base import ModelRegistryBase
 
 
 class ModelRegistry(ModelRegistryBase):

@@ -1,5 +1,5 @@
-from model_registry.registries.base import ModelRegistryBase
-from model_registry import storage
+from dumpster.registries.base import ModelRegistryBase
+from dumpster import storage
 import io
 
 

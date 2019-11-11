@@ -51,7 +51,7 @@ class ModelRegistry(ModelRegistryBase):
         key : str
             Location key in gcp storage
         """
-        storage.write_blob(self._path(key), self.state_blob, self.bucket)
+        storage.write_blob(self._path(key), self.state_blob_f, self.bucket)
 
     def load(self, key):
         """

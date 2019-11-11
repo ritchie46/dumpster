@@ -62,7 +62,7 @@ class ModelRegistryBase:
         self._init_model()
 
     @property
-    def state_blob(self):
+    def state_blob_f(self):
         f = io.BytesIO()
         self.model_.save(f)
         f.seek(0)
@@ -78,7 +78,11 @@ class ModelRegistryBase:
             blob,
         )
         blob.seek(0)
-        return blob.read()
+        return blob
+
+    @property
+    def state_blob(self):
+        return self.state_blob_f.read()
 
     def load_blob(self, blob):
         d = pickle.load(blob)

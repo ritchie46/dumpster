@@ -1,6 +1,7 @@
 from dumpster.registries.base import ModelRegistryBase
 from dumpster import storage
 import io
+import os
 
 
 class ModelRegistry(ModelRegistryBase):
@@ -18,6 +19,29 @@ class ModelRegistry(ModelRegistryBase):
         super().__init__(name)
         self.bucket = bucket
 
+    def _path(self, key):
+        """
+        If path path with extension is given, does nothing.
+
+        If no extension was given. The last path location
+        in the key will be interpreted as directory.
+        Will return `some/directory/<name>.pth`
+
+        Parameters
+        ----------
+        key : str
+            Location key in gcp storage
+        Returns
+        -------
+        key : str
+
+        """
+        _, ext = os.path.splitext(key)
+        if len(ext) == 0:
+            return os.path.join(key, f"{self.name}.pth")
+        else:
+            return key
+
     def dump(self, key):
         """
         Save model state and source.
@@ -27,7 +51,7 @@ class ModelRegistry(ModelRegistryBase):
         key : str
             Location key in gcp storage
         """
-        storage.write_blob(key, self.state_blob, self.bucket)
+        storage.write_blob(self._path(key), self.state_blob, self.bucket)
 
     def load(self, key):
         """
@@ -39,6 +63,6 @@ class ModelRegistry(ModelRegistryBase):
             Location key in gcp storage
         """
         f = io.BytesIO()
-        storage.download_blob(key, f, self.bucket)
+        storage.download_blob(self._path(key), f, self.bucket)
         f.seek(0)
         self.load_blob(f)

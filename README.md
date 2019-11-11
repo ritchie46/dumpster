@@ -3,12 +3,19 @@
 Utility that dumps your **model state**, the **source code** and the **global imports**. This ensures that dumped
 models can be loaded even when the class definition in your project has changed or has ceased to exist.
 
-Currently supported:
+**Currently supported**:
  * file storage
  * google cloud storage
  
  
-## Installaton
+## Installation
+
+Development version
+
+`pip install git+https://github.com/ritchie46/dumpster.git`
+
+(Future) stable version
+
 `pip install dumpster`
  
  ## Usage

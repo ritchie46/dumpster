@@ -13,6 +13,14 @@ class ModelRegistryBase:
     """
 
     def __init__(self, name):
+        """
+        Model Registry base class.
+
+        Parameters
+        ----------
+        name : str
+            Name of the model. Will be used as unique identifier.
+        """
         self.name = name
         self.model_kwargs = None
         # Class source

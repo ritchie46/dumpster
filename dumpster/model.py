@@ -2,7 +2,7 @@ from distutils import config
 import pickle
 
 
-class ExampleModel():
+class ExampleModel:
     def __init__(self, param):
         # run a global import
         self.a = config.Command

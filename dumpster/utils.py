@@ -15,20 +15,20 @@ def clean_source(src):
     src : str
         Cleaned Python source code
     """
-    m = re.match(r'^\s+', src)
+    m = re.match(r"^\s+", src)
 
     # remove indentation if needed
     if m:
         # number of leading spaces
         n = len(m.group(0))
         lines = src.splitlines()
-        src = ''
+        src = ""
         for line in lines:
-            src += line[n:] + '\n'
+            src += line[n:] + "\n"
 
     return src
 
 
 def get_class_name(src):
-    g = re.match(r'^class (\w+)\(', src)
+    g = re.match(r"^class (\w+)\(", src)
     return g.group(1)

@@ -29,27 +29,33 @@ class ModelRegistry(ModelRegistryBase):
         """
         return os.path.join(dir, f"{self.name}.pth")
 
-    def dump(self, dir):
+    def dump(self, path):
         """
         Dump model source and state to disk.
 
         Parameters
         ----------
-        dir : str
-            Directory
+        path : Union[str, file]
+            Directory name
         """
-        os.makedirs(dir, exist_ok=True)
-        with open(self._path(dir), "wb") as f:
-            f.write(self.state_blob)
+        if isinstance(path, str):
+            os.makedirs(path, exist_ok=True)
+            with open(self._path(path), "wb") as f:
+                f.write(self.state_blob)
+        else:
+            path.write(self.state_blob)
 
-    def load(self, dir):
+    def load(self, path):
         """
         Load model source and state.
 
         Parameters
         ----------
-        dir : str
-            Directory
+        path : Union[str, file]
+            Directory name
         """
-        with open(self._path(dir), "rb") as f:
-            self.load_blob(f)
+        if isinstance(path, str):
+            with open(self._path(path), "rb") as f:
+                self.load_blob(f)
+        else:
+            self.load_blob(path)

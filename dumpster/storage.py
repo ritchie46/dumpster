@@ -1,4 +1,3 @@
-
 def read_blob(blob, bucket):
     return bucket.blob(blob).download_as_string().decode("utf-8", errors="ignore")
 

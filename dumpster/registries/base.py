@@ -66,7 +66,9 @@ class ModelRegistryBase:
                 "file_source": self.file_source,
                 "model_blob": f.read(),
                 "model_kwargs": self.model_kwargs,
-            }, blob)
+            },
+            blob,
+        )
         blob.seek(0)
         return blob.read()
 
@@ -76,4 +78,3 @@ class ModelRegistryBase:
         self._init_model()
         f = io.BytesIO(d["model_blob"])
         self.model_.load(f)
-

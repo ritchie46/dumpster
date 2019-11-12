@@ -32,3 +32,17 @@ def clean_source(src):
 def get_class_name(src):
     g = re.match(r"^class (\w+)\(", src)
     return g.group(1)
+
+
+def split_imports_and_logic(src):
+    logic = []
+    imports = []
+    c = re.compile('\simport\s')
+    for line in src.splitlines():
+        g = c.search(line)
+        if g:
+            imports.append(line)
+        else:
+            logic.append(line)
+
+    return '\n'.join(imports), '\n'.join(logic)

@@ -2,7 +2,7 @@ import inspect
 from types import ModuleType
 import io
 import pickle
-from dumpster.utils import clean_source, get_class_name
+from dumpster import utils
 
 
 class ModelRegistryBase:
@@ -37,10 +37,17 @@ class ModelRegistryBase:
         module_name = f"model_{self.name}"
         mod = ModuleType(module_name)
         mod.__dict__.update(globals())
-        exec(self.file_source, mod.__dict__)
+        imports, logic = utils.split_imports_and_logic(self.file_source)
+
+        for line in imports.splitlines():
+            try:
+                exec(line, mod.__dict__)
+            except ModuleNotFoundError:
+                pass
+        exec(logic, mod.__dict__)
         exec(self.source, mod.__dict__)
 
-        key = get_class_name(self.source)
+        key = utils.get_class_name(self.source)
         model_class = mod.__dict__[key]
         self.model_ = model_class(**self.model_kwargs)
 
@@ -55,7 +62,7 @@ class ModelRegistryBase:
         kwargs : kwargs
             Keyword arguments used to initialize the model.
         """
-        self.source = clean_source(inspect.getsource(obj))
+        self.source = utils.clean_source(inspect.getsource(obj))
         with open(inspect.getabsfile(obj)) as f:
             self.file_source = f.read()
         self.model_kwargs = kwargs

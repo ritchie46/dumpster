@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name="dumpster",
-    version="0.1",
+    version="0.1a",
     author="Ritchie Vink",
     author_email="ritchie46@gmail.com",
     url="https://www.ritchievink.com",

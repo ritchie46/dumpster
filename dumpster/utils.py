@@ -30,7 +30,7 @@ def clean_source(src):
 
 
 def get_class_name(src):
-    g = re.match(r"^class (\w+)\(", src)
+    g = re.match(r"^class (\w+)", src)
     return g.group(1)
 
 
@@ -44,5 +44,14 @@ def split_imports_and_logic(src):
             imports.append(line)
         else:
             logic.append(line)
-
     return '\n'.join(imports), '\n'.join(logic)
+
+
+def filter_lines_containing(src, name):
+    lines = []
+    for line in src.splitlines():
+        if name in line:
+            continue
+        lines.append(line)
+    return '\n'.join(lines)
+

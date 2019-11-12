@@ -3,6 +3,7 @@ from types import ModuleType
 import io
 import pickle
 from dumpster import utils
+from dumpster.kwargs import save_kwargs_state, load_kwargs_state
 
 
 class ModelRegistryBase:
@@ -80,7 +81,7 @@ class ModelRegistryBase:
                 "source": self.source,
                 "file_source": self.file_source,
                 "model_blob": f.read(),
-                "model_kwargs": self.model_kwargs,
+                "model_kwargs": save_kwargs_state(self.model_kwargs),
             },
             blob,
         )
@@ -94,6 +95,8 @@ class ModelRegistryBase:
     def load_blob(self, blob):
         d = pickle.load(blob)
         self.__dict__.update({k: v for k, v in d.items() if k != "model_blob"})
+        self.model_kwargs = load_kwargs_state(self.model_kwargs)
         self._init_model()
         f = io.BytesIO(d["model_blob"])
         self.model_.load(f)
+

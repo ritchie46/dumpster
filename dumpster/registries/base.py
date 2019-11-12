@@ -46,7 +46,7 @@ class ModelRegistryBase:
 
     def register(self, obj, **kwargs):
         """
-        Register a Model class inherited from autotrain.model.model.BaseModel
+        Register a Model class.
 
         Parameters
         ----------

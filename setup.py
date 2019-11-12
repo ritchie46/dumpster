@@ -1,4 +1,4 @@
-from setuptools import find_packages
+from setuptools import find_namespace_packages
 from setuptools import setup
 
 
@@ -8,7 +8,7 @@ setup(
     author="Ritchie Vink",
     author_email="ritchie46@gmail.com",
     url="https://www.ritchievink.com",
-    packages=find_packages(),
+    packages=find_namespace_packages(),
     install_requires=[
         "google-cloud-storage>=1.20.0",
     ],

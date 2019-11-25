@@ -61,3 +61,18 @@ def filter_lines_containing(src, name):
 def get_time_hash(size=6):
     t = str(time.time()).encode("ascii")
     return base64.encodebytes(t).hex()[:size]
+
+
+def monkeypath_init(src):
+    c = re.compile(r'\n(\s+)def __init__.*\n')
+    g = c.search(src)
+    n_spaces = len(g.group(1))
+    def_indent = " " * n_spaces * 1
+    indent = " " * n_spaces * 2
+
+    split_idx = g.span()[1]
+
+    return src[:g.span()[0]] + f"""
+{def_indent}def __init__(self, **kwargs):
+{indent}self.__dict__ = kwargs
+{indent}return None\n""" + src[split_idx:]

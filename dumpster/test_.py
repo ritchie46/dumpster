@@ -78,3 +78,35 @@ def test_pickle_insert(files_dir):
     mr_ = file.ModelRegistry("test")
     mr_.load(path)
     assert type(mr.model_.a) == type(mr_.model_.a)
+
+
+def test_prevent_init_execution():
+    src = """
+class ExampleModelBare:
+    def __init__(self, param):
+        self.a = config.Command
+        self.param = param
+    """
+
+    assert utils.monkeypath_init(src) == """
+class ExampleModelBare:
+    def __init__(self, **kwargs):
+        self.__dict__ = kwargs
+        return None
+        self.a = config.Command
+        self.param = param
+    """
+
+
+def test_jit_register(files_dir):
+    path = str(files_dir.join("dump.pkl"))
+
+    model = ExampleModelBare("parameter")
+    mr = file.ModelRegistry("test")
+    mr.register(model, insert_methods='pickle')
+    mr.dump(path)
+
+    # create new MR
+    mr_ = file.ModelRegistry("test")
+    mr_.load(path)
+    assert type(mr.model_.a) == type(mr_.model_.a)

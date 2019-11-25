@@ -66,8 +66,9 @@ class ClassInspector:
             with open(inspect.getabsfile(obj)) as f:
                 self.file_source = f.read()
         except TypeError: # built-in class
-            pass
+            return False
         self.kwargs = kwargs
+        return True
 
     @property
     def state_blob_f(self):

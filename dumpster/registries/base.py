@@ -79,16 +79,26 @@ class ModelRegistryBase:
         kwargs : kwargs
             Keyword arguments used to initialize the model.
         """
-        self.source = utils.clean_source(inspect.getsource(obj))
+        if inspect.isclass(obj):
+            cls = obj
+        else:
+            cls = type(obj)
+        self.source = utils.clean_source(inspect.getsource(cls))
         self.source += getattr(dump_methods, insert_methods)
 
-        with open(inspect.getabsfile(obj)) as f:
+        with open(inspect.getabsfile(cls)) as f:
             self.file_source = f.read()
+
         self.model_kwargs = kwargs
         if inspect.isclass(obj):
             self._init_model()
         else:
-            self.model_ = obj
+            print("Monkeypath")
+            self.source = utils.monkeypath_init(self.source)
+            self.model_kwargs = obj.__dict__
+            self._init_model()
+
+            # self.model_ = obj
         check_validity(self.model_)
 
     @property

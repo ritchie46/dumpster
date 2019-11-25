@@ -11,14 +11,13 @@ def is_primitive(obj):
 def save_kwargs_state(kwargs):
     passed = {}
     for k, v in kwargs.items():
-        if is_primitive(v):
-            passed[k] = v
-        else:
-            ci = ClassInspector(str(v))
-            ci.register(type(v))
+        ci = ClassInspector(str(v))
+        if ci.register(type(v)):
             passed[k] = {"CI-CLASS": ci.state_blob,
                          "value": pickle.dumps(v),
                          "module": v.__module__}
+        else:  # Built in object, Pickle can load this.
+            passed[k] = v
     return passed
 
 

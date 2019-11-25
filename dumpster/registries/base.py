@@ -10,6 +10,14 @@ from dumpster import dump_methods
 logger = getLogger(__name__)
 
 
+def check_validity(mr):
+    valid = hasattr(mr, "save") and hasattr(mr, "load")
+    if not valid:
+        raise ValueError(
+            "Could not find any load or save method. Implement these or set the 'insert_methods' argument."
+        )
+
+
 class ModelRegistryBase:
     """
     Utility to save model state as well as source code.
@@ -17,7 +25,7 @@ class ModelRegistryBase:
     if the repositories code has changed.
     """
 
-    def __init__(self, name):
+    def __init__(self, name=None):
         """
         Model Registry base class.
 
@@ -26,7 +34,7 @@ class ModelRegistryBase:
         name : str
             Name of the model. Will be used as unique identifier.
         """
-        self.name = name
+        self.name = utils.get_time_hash(6) if name is None else name
         self.model_kwargs = None
         # Class source
         self.source = None
@@ -81,6 +89,7 @@ class ModelRegistryBase:
             self._init_model()
         else:
             self.model_ = obj
+        check_validity(self.model_)
 
     @property
     def state_blob_f(self):

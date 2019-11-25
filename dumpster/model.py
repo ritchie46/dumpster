@@ -13,3 +13,9 @@ class ExampleModel:
 
     def load(self, state):
         self.a = pickle.load(state)
+
+
+class ExampleModelBare:
+    def __init__(self, param):
+        self.a = config.Command
+        self.param = param

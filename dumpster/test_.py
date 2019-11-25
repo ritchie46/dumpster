@@ -1,8 +1,8 @@
 import os
-
+from dumpster import utils
 from dumpster.registries import base
 from dumpster import file
-from dumpster.model import ExampleModel
+from dumpster.model import ExampleModel, ExampleModelBare
 import io
 import pytest
 
@@ -49,5 +49,15 @@ def test_add_dump_methods():
 
 def test_load_model_source():
     mr = file.ModelRegistry("test")
-    with open(os.path.join(os.path.dirname(__file__), "../test/test.pth"), "rb") as f:
+    with open(os.path.join(os.path.dirname(__file__), "test/test.pth"), "rb") as f:
         assert isinstance(mr.load_model_source(f), str)
+
+
+def test_time_hash():
+    assert len(utils.get_time_hash(6)) == 6
+
+
+def test_raise():
+    mr = file.ModelRegistry("test")
+    with pytest.raises(ValueError):
+        mr.register(ExampleModelBare, param="parameter")

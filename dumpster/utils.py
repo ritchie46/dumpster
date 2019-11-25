@@ -1,4 +1,6 @@
 import re
+import base64
+import time
 
 
 def clean_source(src):
@@ -37,14 +39,14 @@ def get_class_name(src):
 def split_imports_and_logic(src):
     logic = []
     imports = []
-    c = re.compile('\simport\s')
+    c = re.compile(r"\simport\s")
     for line in src.splitlines():
         g = c.search(line)
         if g:
             imports.append(line)
         else:
             logic.append(line)
-    return '\n'.join(imports), '\n'.join(logic)
+    return "\n".join(imports), "\n".join(logic)
 
 
 def filter_lines_containing(src, name):
@@ -53,5 +55,9 @@ def filter_lines_containing(src, name):
         if name in line:
             continue
         lines.append(line)
-    return '\n'.join(lines)
+    return "\n".join(lines)
 
+
+def get_time_hash(size=6):
+    t = str(time.time()).encode("ascii")
+    return base64.encodebytes(t).hex()[:size]

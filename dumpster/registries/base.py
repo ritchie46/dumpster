@@ -93,7 +93,6 @@ class ModelRegistryBase:
         if inspect.isclass(obj):
             self._init_model()
         else:
-            print("Monkeypath")
             self.source = utils.monkeypath_init(self.source)
             self.model_kwargs = obj.__dict__
             self._init_model()

@@ -11,6 +11,9 @@ def is_primitive(obj):
 def save_kwargs_state(kwargs):
     passed = {}
     for k, v in kwargs.items():
+        if is_primitive(v):
+            passed[k] = v
+            continue
         ci = ClassInspector(str(v))
         if ci.register(type(v)):
             passed[k] = {"CI-CLASS": ci.state_blob,

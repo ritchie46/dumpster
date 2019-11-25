@@ -5,7 +5,7 @@ import pickle
 from dumpster import utils
 from dumpster.kwargs import save_kwargs_state, load_kwargs_state
 from logging import getLogger
-from dumpster import savers
+from dumpster import dump_methods
 
 logger = getLogger(__name__)
 
@@ -56,7 +56,7 @@ class ModelRegistryBase:
         model_class = mod.__dict__[key]
         self.model_ = model_class(**self.model_kwargs)
 
-    def register(self, obj, add_save=None, **kwargs):
+    def register(self, obj, insert_methods="none", **kwargs):
         """
         Register a Model class.
 
@@ -64,16 +64,15 @@ class ModelRegistryBase:
         ----------
         obj : class
             Model class definition. Model should have save and load method.
-        add_save : str
-            Add save method to class source.
+        insert_methods : str
+            Insert required 'save' and 'load' method to class source.
+                - 'none'
                 - 'pytorch'
         kwargs : kwargs
             Keyword arguments used to initialize the model.
         """
         self.source = utils.clean_source(inspect.getsource(obj))
-
-        if add_save is not None:
-            self.source += getattr(savers, add_save)
+        self.source += getattr(dump_methods, insert_methods)
 
         with open(inspect.getabsfile(obj)) as f:
             self.file_source = f.read()
@@ -108,9 +107,17 @@ class ModelRegistryBase:
 
     def load_blob(self, blob):
         d = pickle.load(blob)
-        self.__dict__.update({k: v for k, v in d.items() if k != "model_blob"})
-        self.model_kwargs = load_kwargs_state(self.model_kwargs)
-        self._init_model()
-        f = io.BytesIO(d["model_blob"])
-        self.model_.load(f)
 
+        # Starts with the base source code and tries to load it.
+        # If that doesn't succeed, other dump_methods are tried.
+        for a in filter(lambda v: not v.startswith("__"), dir(dump_methods)):
+            try:
+                self.__dict__.update({k: v for k, v in d.items() if k != "model_blob"})
+                self.model_kwargs = load_kwargs_state(self.model_kwargs)
+                self.source += getattr(dump_methods, a)
+                self._init_model()
+                f = io.BytesIO(d["model_blob"])
+                self.model_.load(f)
+                break
+            except Exception:
+                pass

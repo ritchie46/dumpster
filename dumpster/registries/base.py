@@ -4,6 +4,10 @@ import io
 import pickle
 from dumpster import utils
 from dumpster.kwargs import save_kwargs_state, load_kwargs_state
+from logging import getLogger
+from dumpster import savers
+
+logger = getLogger(__name__)
 
 
 class ModelRegistryBase:
@@ -52,7 +56,7 @@ class ModelRegistryBase:
         model_class = mod.__dict__[key]
         self.model_ = model_class(**self.model_kwargs)
 
-    def register(self, obj, **kwargs):
+    def register(self, obj, add_save=None, **kwargs):
         """
         Register a Model class.
 
@@ -60,14 +64,24 @@ class ModelRegistryBase:
         ----------
         obj : class
             Model class definition. Model should have save and load method.
+        add_save : str
+            Add save method to class source.
+                - 'pytorch'
         kwargs : kwargs
             Keyword arguments used to initialize the model.
         """
         self.source = utils.clean_source(inspect.getsource(obj))
+
+        if add_save is not None:
+            self.source += getattr(savers, add_save)
+
         with open(inspect.getabsfile(obj)) as f:
             self.file_source = f.read()
         self.model_kwargs = kwargs
-        self._init_model()
+        if inspect.isclass(obj):
+            self._init_model()
+        else:
+            self.model_ = obj
 
     @property
     def state_blob_f(self):

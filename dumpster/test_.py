@@ -7,6 +7,11 @@ import io
 import pytest
 
 
+@pytest.fixture(scope="module")
+def files_dir(tmpdir_factory):
+    return tmpdir_factory.mktemp("test_dir")
+
+
 def test_init():
     mr = base.ModelRegistryBase("test")
     mr.register(ExampleModel, param="parameter")
@@ -61,3 +66,15 @@ def test_raise():
     mr = file.ModelRegistry("test")
     with pytest.raises(ValueError):
         mr.register(ExampleModelBare, param="parameter")
+
+
+def test_pickle_insert(files_dir):
+    path = str(files_dir.join("dump.pkl"))
+    mr = file.ModelRegistry("test")
+    mr.register(ExampleModelBare, insert_methods="pickle", param="parameter")
+    mr.dump(path)
+
+    # create new MR
+    mr_ = file.ModelRegistry("test")
+    mr_.load(path)
+    assert type(mr.model_.a) == type(mr_.model_.a)

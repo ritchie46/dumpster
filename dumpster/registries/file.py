@@ -9,7 +9,7 @@ class ModelRegistry(ModelRegistryBase):
     if the repositories code has changed.
     """
 
-    def __init__(self, name):
+    def __init__(self, name=None):
         super().__init__(name)
 
     def _path(self, dir):

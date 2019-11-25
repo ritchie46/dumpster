@@ -61,9 +61,12 @@ class ClassInspector:
         kwargs : kwargs
             Keyword arguments.
         """
-        self.source = utils.clean_source(inspect.getsource(obj))
-        with open(inspect.getabsfile(obj)) as f:
-            self.file_source = f.read()
+        try:
+            self.source = utils.clean_source(inspect.getsource(obj))
+            with open(inspect.getabsfile(obj)) as f:
+                self.file_source = f.read()
+        except TypeError: # built-in class
+            pass
         self.kwargs = kwargs
 
     @property

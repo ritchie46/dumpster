@@ -105,15 +105,19 @@ class ModelRegistryBase:
     def state_blob(self):
         return self.state_blob_f.read()
 
-    def load_blob(self, blob):
-        d = pickle.load(blob)
+    def load_blob(self, f):
+        """
+        Loads source, attributes and model instance.
 
+        Parameters
+        ----------
+        f : file
+        """
         # Starts with the base source code and tries to load it.
         # If that doesn't succeed, other dump_methods are tried.
         for a in filter(lambda v: not v.startswith("__"), dir(dump_methods)):
             try:
-                self.__dict__.update({k: v for k, v in d.items() if k != "model_blob"})
-                self.model_kwargs = load_kwargs_state(self.model_kwargs)
+                d = self._load_source(f)
                 self.source += getattr(dump_methods, a)
                 self._init_model()
                 f = io.BytesIO(d["model_blob"])
@@ -121,3 +125,30 @@ class ModelRegistryBase:
                 break
             except Exception:
                 pass
+
+    def _load_source(self, f):
+        """
+        Only load source and attributes. Does not instantiate the model instance.
+
+        Parameters
+        ----------
+        f : file
+        """
+        d = pickle.load(f)
+        self.__dict__.update({k: v for k, v in d.items() if k != "model_blob"})
+        self.model_kwargs = load_kwargs_state(self.model_kwargs)
+        return d
+
+    def load_model_source(self, f):
+        """
+
+        Parameters
+        ----------
+        f : file
+
+        Returns
+        -------
+
+        """
+        self._load_source(f)
+        return self.file_source

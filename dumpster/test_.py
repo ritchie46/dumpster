@@ -1,3 +1,5 @@
+import os
+
 from dumpster.registries import base
 from dumpster import file
 from dumpster.model import ExampleModel
@@ -43,3 +45,9 @@ def test_add_dump_methods():
     with pytest.raises(AttributeError):
         f = io.BytesIO()
         mr.model_.save(f)
+
+
+def test_load_model_source():
+    mr = file.ModelRegistry("test")
+    with open(os.path.join(os.path.dirname(__file__), "../test/test.pth"), "rb") as f:
+        assert isinstance(mr.load_model_source(f), str)

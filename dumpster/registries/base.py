@@ -55,8 +55,10 @@ class ModelRegistryBase:
         for line in imports.splitlines():
             try:
                 exec(line, mod.__dict__)
-            except ModuleNotFoundError:
-                pass
+            except ModuleNotFoundError as e:
+                logger.warning(
+                    f"Could not import {e.name}. If you cannot load model, add this to sys.path."
+                )
         exec(logic, mod.__dict__)
         exec(self.source, mod.__dict__)
 

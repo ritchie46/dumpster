@@ -1,4 +1,4 @@
-from dumpster.inspector import ClassInspector
+from dumpster.inspector import CodeInspector
 import pickle
 import sys
 from types import ModuleType
@@ -14,7 +14,7 @@ def save_kwargs_state(kwargs):
         if is_primitive(v):
             passed[k] = v
             continue
-        ci = ClassInspector(str(v))
+        ci = CodeInspector(str(v))
         if ci.register(type(v)):
             passed[k] = {"CI-CLASS": ci.state_blob,
                          "value": pickle.dumps(v),
@@ -69,7 +69,7 @@ def load_kwargs_state(kwargs):
     for k, v in kwargs.items():
         if isinstance(v, dict):
             if "CI-CLASS" in v:
-                ci = ClassInspector(v['module'])
+                ci = CodeInspector(v['module'])
                 ci.load_blob(v["CI-CLASS"])
                 module_state.__dict__.update(ci.module.__dict__)
 

@@ -6,10 +6,9 @@ from dumpster import utils
 import re
 
 
-class ClassInspector:
+class CodeInspector:
     def __init__(self, name):
         self.name = name
-        self.kwargs = None
         # Class source
         self.source = None
         # Source of the whole file, needed for imports of globals
@@ -19,8 +18,7 @@ class ClassInspector:
 
     def load(self):
         """
-        Initialize the model from the source code
-        and the given kwargs.
+        Execute the defined source code
         """
 
         imports, logic = utils.split_imports_and_logic(self.file_source)
@@ -50,16 +48,13 @@ class ClassInspector:
         exec(logic, self.module.__dict__)
         exec(self.source, self.module.__dict__)
 
-    def register(self, obj, **kwargs):
+    def register(self, obj):
         """
         Register a Class.
 
         Parameters
         ----------
-        obj : class
-            Class definition. Model should have save and load method.
-        kwargs : kwargs
-            Keyword arguments.
+        obj : class/ function
         """
         try:
             self.source = utils.clean_source(inspect.getsource(obj))
@@ -67,7 +62,6 @@ class ClassInspector:
                 self.file_source = f.read()
         except TypeError: # built-in class
             return False
-        self.kwargs = kwargs
         return True
 
     @property

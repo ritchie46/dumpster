@@ -45,6 +45,7 @@ class ModelRegistry(ModelRegistryBase):
                 f.write(self.state_blob)
         else:
             path.write(self.state_blob)
+        return self
 
     def load(self, path, expand_path=True):
         """
@@ -69,3 +70,4 @@ class ModelRegistry(ModelRegistryBase):
             if not isinstance(path, io.BufferedReader):
                 raise ValueError("File object should read as bytes not text.")
             self.load_blob(path)
+        return self

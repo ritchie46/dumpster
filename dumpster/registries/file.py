@@ -46,7 +46,7 @@ class ModelRegistry(ModelRegistryBase):
         else:
             path.write(self.state_blob)
 
-    def load(self, path):
+    def load(self, path, expand_path=True):
         """
         Load model source and state.
 
@@ -54,9 +54,16 @@ class ModelRegistry(ModelRegistryBase):
         ----------
         path : Union[str, file]
             Directory name
+        expand_path : bool
+            Assumes given path is a directory and searches
+            for ModelRegistry file. If False, assumes path is model file.
         """
         if isinstance(path, str):
-            with open(self._path(path), "rb") as f:
+            if expand_path:
+                f = self._path
+            else:
+                f = lambda x: x
+            with open(f(path), "rb") as f:
                 self.load_blob(f)
         else:
             if not isinstance(path, io.BufferedReader):

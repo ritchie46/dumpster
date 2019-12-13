@@ -1,3 +1,4 @@
+import io
 import os
 from dumpster.registries.base import ModelRegistryBase
 
@@ -58,4 +59,6 @@ class ModelRegistry(ModelRegistryBase):
             with open(self._path(path), "rb") as f:
                 self.load_blob(f)
         else:
+            if not isinstance(path, io.BufferedReader):
+                raise ValueError("File object should read as bytes not text.")
             self.load_blob(path)

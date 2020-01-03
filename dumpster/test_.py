@@ -88,7 +88,7 @@ class ExampleModelBare:
         self.param = param
     """
 
-    assert utils.monkeypath_init(src) == """
+    assert utils.monkeypatch_init(src) == """
 class ExampleModelBare:
     def __init__(self, **kwargs):
         self.__dict__ = kwargs

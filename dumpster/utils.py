@@ -63,7 +63,7 @@ def get_time_hash(size=6):
     return base64.encodebytes(t).hex()[:size]
 
 
-def monkeypath_init(src):
+def monkeypatch_init(src):
     c = re.compile(r'\n(\s+)def __init__.*\n')
     g = c.search(src)
     n_spaces = len(g.group(1))

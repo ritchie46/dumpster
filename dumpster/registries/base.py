@@ -41,6 +41,8 @@ class ModelRegistryBase:
         # Source of the whole file, needed for imports of globals
         self.file_source = None
         self.model_ = None
+        self.cls = None
+        self._insert_methods = 'none'
 
     def _init_model(self):
         """
@@ -66,7 +68,7 @@ class ModelRegistryBase:
         model_class = mod.__dict__[key]
         self.model_ = model_class(**self.model_kwargs)
 
-    def register(self, obj, insert_methods="none", **kwargs):
+    def register(self, obj, insert_methods="none", init_model=True, **kwargs):
         """
         Register a Model class.
 
@@ -78,25 +80,26 @@ class ModelRegistryBase:
             Insert required 'save' and 'load' method to class source.
                 - 'none'
                 - 'pytorch'
+        init_model : bool
+            Initiate the model from source.
         kwargs : kwargs
             Keyword arguments used to initialize the model.
         """
         if inspect.isclass(obj):
-            cls = obj
+            self.cls = obj
         else:
-            cls = type(obj)
-        self.source = utils.clean_source(inspect.getsource(cls))
+            self.cls = type(obj)
+        self.source = utils.clean_source(inspect.getsource(self.cls))
         self.source += getattr(dump_methods, insert_methods)
 
-        with open(inspect.getabsfile(cls)) as f:
+        with open(inspect.getabsfile(self.cls)) as f:
             self.file_source = f.read()
 
         self.model_kwargs = kwargs
-        if inspect.isclass(obj):
-            self._init_model()
-        else:
-            self.source = utils.monkeypath_init(self.source)
+        if not inspect.isclass(obj):
+            self.source = utils.monkeypatch_init(self.source)
             self.model_kwargs = obj.__dict__
+        if init_model:
             self._init_model()
 
             # self.model_ = obj
@@ -112,6 +115,7 @@ class ModelRegistryBase:
         pickle.dump(
             {
                 "source": self.source,
+                "cls": self.cls,
                 "file_source": self.file_source,
                 "model_blob": f.read(),
                 "model_kwargs": save_kwargs_state(self.model_kwargs),
@@ -172,3 +176,12 @@ class ModelRegistryBase:
         """
         self._load_source(f)
         return self.file_source
+
+    def update_source(self):
+        """
+        Use current repositories source (loaded from self.cls) to load the model.
+        """
+        model_kwargs = self.model_kwargs
+        self.register(self.cls, insert_methods=self._insert_methods, init_model=False)
+        self.model_kwargs = model_kwargs
+        self.load_blob(self.state_blob_f)

@@ -40,8 +40,12 @@ class ModelRegistry(ModelRegistryBase):
             Directory name
         """
         if isinstance(path, str):
-            os.makedirs(path, exist_ok=True)
-            with open(self._path(path), "wb") as f:
+            if path.lower().endswith((".pth", ".pkl")):
+                func = lambda x: x
+            else:
+                os.makedirs(path, exist_ok=True)
+                func = self._path
+            with open(func(path), "wb") as f:
                 f.write(self.state_blob)
         else:
             path.write(self.state_blob)
@@ -60,14 +64,17 @@ class ModelRegistry(ModelRegistryBase):
             for ModelRegistry file. If False, assumes path is model file.
         """
         if isinstance(path, str):
+            if path.lower().endswith((".pth", ".pkl")):
+                expand_path = False
+
             if expand_path:
-                f = self._path
+                func = self._path
             else:
-                f = lambda x: x
-            with open(f(path), "rb") as f:
+                func = lambda x: x
+            with open(func(path), "rb") as f:
                 self.load_blob(f)
         else:
-            if not isinstance(path, io.BufferedReader):
+            if not isinstance(path, (io.BytesIO, io.BufferedReader)):
                 raise ValueError("File object should read as bytes not text.")
             self.load_blob(path)
         return self

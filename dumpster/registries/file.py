@@ -45,7 +45,7 @@ class ModelRegistry(ModelRegistryBase):
             else:
                 os.makedirs(path, exist_ok=True)
                 func = self._path
-            with open(func(path), "wb") as f:
+            with open(func(path), "wb", encoding="utf-8") as f:
                 f.write(self.state_blob)
         else:
             path.write(self.state_blob)
@@ -71,7 +71,7 @@ class ModelRegistry(ModelRegistryBase):
                 func = self._path
             else:
                 func = lambda x: x
-            with open(func(path), "rb") as f:
+            with open(func(path), "rb", encoding="utf-8") as f:
                 self.load_blob(f)
         else:
             if not isinstance(path, (io.BytesIO, io.BufferedReader)):

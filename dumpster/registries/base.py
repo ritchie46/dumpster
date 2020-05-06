@@ -42,7 +42,7 @@ class ModelRegistryBase:
         self.file_source = None
         self.model_ = None
         self.cls = None
-        self._insert_methods = 'none'
+        self._insert_methods = "none"
 
     def _init_model(self):
         """
@@ -93,11 +93,8 @@ class ModelRegistryBase:
         self.source += getattr(dump_methods, insert_methods)
 
         file_path = inspect.getabsfile(self.cls)
-        try:
-            with open(file_path) as f:
-                self.file_source = f.read()
-        except Exception as e:
-            print(f"Could not read file {file_path} due to error: {e}")
+        with open(file_path, encoding="utf-8") as f:
+            self.file_source = f.read()
 
         self.model_kwargs = kwargs
         if not inspect.isclass(obj):

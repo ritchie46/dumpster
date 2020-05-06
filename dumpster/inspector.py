@@ -58,9 +58,9 @@ class CodeInspector:
         """
         try:
             self.source = utils.clean_source(inspect.getsource(obj))
-            with open(inspect.getabsfile(obj)) as f:
+            with open(inspect.getabsfile(obj), encoding="utf-8") as f:
                 self.file_source = f.read()
-        except TypeError: # built-in class
+        except TypeError:  # built-in class
             return False
         return True
 
@@ -68,11 +68,7 @@ class CodeInspector:
     def state_blob_f(self):
         blob = io.BytesIO()
         pickle.dump(
-            {
-                "source": self.source,
-                "file_source": self.file_source,
-            },
-            blob,
+            {"source": self.source, "file_source": self.file_source,}, blob,
         )
         blob.seek(0)
         return blob

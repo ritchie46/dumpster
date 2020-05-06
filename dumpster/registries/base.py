@@ -92,8 +92,12 @@ class ModelRegistryBase:
         self.source = utils.clean_source(inspect.getsource(self.cls))
         self.source += getattr(dump_methods, insert_methods)
 
-        with open(inspect.getabsfile(self.cls)) as f:
-            self.file_source = f.read()
+        file_path = inspect.getabsfile(self.cls)
+        try:
+            with open(file_path) as f:
+                self.file_source = f.read()
+        except Exception as e:
+            print(f"Could not read file {file_path} due to error: {e}")
 
         self.model_kwargs = kwargs
         if not inspect.isclass(obj):
